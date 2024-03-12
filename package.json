@@ -4,7 +4,8 @@
   "description": "Convert Google Sheet data to JSON data",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
   },
   "keywords": [
     "google-sheet",
@@ -13,8 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dayjs": "^1.11.10",
-    "recursive-fs": "^2.1.0",
+    "dotenv": "^16.4.5",
+    "make-dir": "^4.0.0",
+    "recursive-readdir": "^2.2.3",
     "xlsx": "^0.18.5"
   }
 }
