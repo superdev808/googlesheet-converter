@@ -3,23 +3,24 @@ const recursive = require("recursive-readdir");
 const makeDir = require("make-dir");
 const path = require("path");
 const xlsx = require("xlsx");
+const _ = require("lodash");
 
 require("dotenv").config();
 
-function readFile(filePath) {
-    const resolvedPath = path.resolve(filePath);
-    const fileExtension = path.extname(resolvedPath).toLowerCase();
+function formatJSON(obj) {
+    if (_.isArray(obj)) return obj.map((value) => formatValue(value));
+    const keyFormattedObj = _.mapKeys(obj, (value, key) => formatValue(key));
+    const keyValueFormattedObj = _.mapValues(keyFormattedObj, (value) => formatValue(value))
+    return _.pickBy(
+        keyValueFormattedObj,
+        (value) => value != ""
+    );
+}
 
-    switch (fileExtension) {
-        case ".csv":
-            return parseCsvToJSON(resolvedPath);
-        case ".xlsx":
-        case ".xls":
-            return parseExcelToJSON(resolvedPath);
-        default:
-            console.log("Unsupported file format");
-            return [];
-    }
+function formatValue(value) {
+    if (_.isString(value)) return value.replace(/\r?\n/g, " ").trim();
+    else if (_.isObject(value)) return formatJSON(value);
+    return value;
 }
 
 function isNotExcelFile(filePath) {
@@ -50,7 +51,7 @@ async function main() {
         );
         fs.writeFileSync(
             outputPath,
-            JSON.stringify(parseExcelToJSON(filePath), null, 2)
+            JSON.stringify(formatJSON(parseExcelToJSON(filePath)), null, 2)
         );
         console.log(`${fileName} writing done`);
     });
